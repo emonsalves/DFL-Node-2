@@ -7,6 +7,19 @@ const app = express();
 app.use(morgan('dev'));
 app.use(express.json());
 
+
+app.get('/', (req, res) => {
+    res.send(`<h1> Well come to Canciones </h1>`);
+})
+
+
+app.get('/canciones', (req, res) => {
+    res.sendFile('./repertorio.json', {
+        root: __dirname
+    });
+})
+
+
 app.post('/canciones', (req, res) => {
     const data = JSON.parse(fs.readFileSync(`repertorio.json`, 'utf8'));
     const newData = { id: data.length + 1, ...req.body };
@@ -17,11 +30,6 @@ app.post('/canciones', (req, res) => {
     });
 })
 
-app.get('/canciones', (req, res) => {
-    res.sendFile('./repertorio.json', {
-        root: __dirname
-    });
-})
 
 app.put('/canciones/:id', (req, res) => {
     const { id } = req.params
@@ -47,6 +55,7 @@ app.put('/canciones/:id', (req, res) => {
 
 })
 
+
 app.delete('/canciones/:id', (req, res) => {
     const { id } = req.params
     let data = JSON.parse(fs.readFileSync(`repertorio.json`, 'utf8'));
@@ -67,9 +76,11 @@ app.delete('/canciones/:id', (req, res) => {
     });
 })
 
+
 app.use((req, res) => {
     res.status(404).send('<h1>Not Found</h1>')
 })
+
 
 app.listen(3000)
 console.log(`Server on port ${3000}`)
