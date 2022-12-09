@@ -4,13 +4,16 @@ const fs = require('fs');
 
 const app = express();
 
+
 app.use(morgan('dev'));
 app.use(express.json());
 
 
-app.get('/', (req, res) => {
-    res.send(`<h1> Well come to Canciones </h1>`);
-})
+app.use(express.static('./public'))
+
+// app.get('/', (req, res) => {
+//     res.send(`<h1> Well come to Canciones </h1>`);
+// })
 
 
 app.get('/canciones', (req, res) => {
