@@ -9,9 +9,6 @@ const archivo = path.join(__dirname, '/repertorio.json')
 app.use(morgan('dev'));
 app.use(express.json());
 
-// app.get('/', (req, res) => {
-//     res.send(`<h1> Well come to Canciones </h1>`);
-// })
 
 app.get('/canciones', (req, res) => {
     res.sendFile('./repertorio.json', {
@@ -27,7 +24,7 @@ app.post('/canciones', (req, res) => {
     fs.writeFileSync(archivo, JSON.stringify([...data, newData], null, 4))
 
     res.json({
-        message: "Producto creado"
+        message: "cancion registrada"
     });
 })
 
@@ -41,7 +38,7 @@ app.put('/canciones/:id', (req, res) => {
 
     if (!dataFound)
         return res.status(404).json({
-            message: "Producto no encontrado"
+            message: "cancion no encontrada"
         })
 
     data = data.map((e) => e.id === parseInt(id)
@@ -51,7 +48,7 @@ app.put('/canciones/:id', (req, res) => {
     fs.writeFileSync(archivo, JSON.stringify(data, null, 4))
 
     res.status(202).json({
-        message: "Producto actualizado"
+        message: "cancion actualizada"
     });
 
 })
@@ -65,7 +62,7 @@ app.delete('/canciones/:id', (req, res) => {
 
     if (!dataFound)
         return res.status(404).json({
-            message: "Producto no encontrado"
+            message: "cancion no encontrada"
         })
 
     data = data.filter((e) => e.id !== parseInt(id))
@@ -73,7 +70,7 @@ app.delete('/canciones/:id', (req, res) => {
     fs.writeFileSync(archivo, JSON.stringify(data, null, 4))
 
     res.status(202).json({
-        message: "Producto eliminado"
+        message: "cancion eliminada"
     });
 })
 
