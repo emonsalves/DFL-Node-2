@@ -24,3 +24,20 @@ Requerimientos <br>
 3. Ofrecer diferentes rutas con diferentes métodos HTTP que permitan las operaciones CRUD de datos alojados en un archivo JSON local <br>
 4. Manipular los parámetros obtenidos en la URL <br>
 5. Manipular el payload de una consulta HTTP al servidor <br>
+
+## Instalacion
+
+```$npm install
+$npm install
+```
+
+## Levantar Server
+
+```$npm run dev
+$npm run dev
+```
+
+## Sitio Web Server
+```
+http://localhost:3000/
+```
