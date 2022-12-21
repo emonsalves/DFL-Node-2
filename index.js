@@ -1,56 +1,61 @@
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const morgan = require("morgan");
-const path = require('path');
-const fs = require('fs');
 const cors = require('cors');
 
+require('dotenv').config();
+
 const app = express();
-const archivo = path.join(__dirname, '/public/repertorio.json');
+
+const PORT = process.env.PORT || 3000;
+const dataJson = path.join(__dirname, '/public/repertorio.json');
 
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors());
 
+//levanto la carpeta public completa con index
+app.use(express.static(path.join(__dirname, 'public')))
 
-
-app.get('/canciones', (req, res) => {
-    res.sendFile('./public/repertorio.json', {
-        root: __dirname
-    });
-})
-
+app.get('/canciones', (req, res) => res.sendFile(dataJson))
 
 app.post('/canciones', (req, res) => {
-    const data = JSON.parse(fs.readFileSync(archivo), 'utf8');
-    const newData = { id: Math.floor(Math.random() * 9999), ...req.body };
-    fs.writeFileSync(archivo, JSON.stringify([...data, newData], null, 2))
+    const songs = JSON.parse(fs.readFileSync(dataJson), 'utf8');
+    const newSong = { ...req.body, id: Math.floor(Math.random() * 9999) };
+    fs.writeFileSync(dataJson, JSON.stringify([...songs, newSong], null, 2))
 
-    res.json({
-        message: "cancion registrada"
+    res.status(201).json({
+        message: "Cancion registrada"
     });
 })
-
 
 app.put('/canciones/:id', (req, res) => {
     const { id } = req.params
-    const newData = req.body
-    let data = JSON.parse(fs.readFileSync(archivo), 'utf8');
 
-    const dataFound = data.find((e) => e.id === parseInt(id))
-
-    if (!dataFound)
+    if (!id) {
         return res.status(404).json({
-            message: "cancion no encontrada"
+            message: "Error no hay ID definida"
+        })
+    }
+
+    const newSong = req.body
+    let songs = JSON.parse(fs.readFileSync(dataJson), 'utf8');
+    const foundSong = songs.find((song) => song.id === parseInt(id))
+
+    if (!foundSong)
+        return res.status(404).json({
+            message: "Cancion no encontrada"
         })
 
-    data = data.map((e) => e.id === parseInt(id)
-        ? { ...e, ...newData }
-        : e)
+    songs = songs.map((song) => song.id === parseInt(id)
+        ? { ...song, ...newSong }
+        : song)
 
-    fs.writeFileSync(archivo, JSON.stringify(data, null, 4))
+    fs.writeFileSync(dataJson, JSON.stringify(songs, null, 2))
 
     res.status(202).json({
-        message: "cancion actualizada"
+        message: "Cancion actualizada"
     });
 
 })
@@ -58,29 +63,40 @@ app.put('/canciones/:id', (req, res) => {
 
 app.delete('/canciones/:id', (req, res) => {
     const { id } = req.params
-    let data = JSON.parse(fs.readFileSync(archivo), 'utf8');
 
-    const dataFound = data.find((e) => e.id === parseInt(id))
-
-    if (!dataFound)
+    if (!id) {
         return res.status(404).json({
-            message: "cancion no encontrada"
+            message: "Error no hay ID definida"
+        })
+    }
+
+    let songs = JSON.parse(fs.readFileSync(dataJson), 'utf8');
+
+    const foundSong = songs.find((song) => song.id === parseInt(id))
+
+    if (!foundSong)
+        return res.status(404).json({
+            message: "Cancion no encontrada"
         })
 
-    data = data.filter((e) => e.id !== parseInt(id))
+    songs = songs.filter((song) => song.id !== parseInt(id))
 
-    fs.writeFileSync(archivo, JSON.stringify(data, null, 4))
+    fs.writeFileSync(dataJson, JSON.stringify(songs, null, 2))
 
     res.status(202).json({
-        message: "cancion eliminada"
+        message: "Cancion eliminada"
     });
 })
 
-app.use(express.static(path.join(__dirname, 'public')))
-
+// se deja abajo o corta el proceso
 app.use((req, res) => {
     res.status(404).send('<h1>Not Found</h1>')
 })
 
-app.listen(3000)
-console.log(`Server on port ${3000}`)
+app.listen(PORT, (error) => {
+    if (error) {
+        console.log(error)
+        throw error
+    }
+    console.log(`Server on port ${PORT}`)
+});
