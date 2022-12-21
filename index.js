@@ -2,12 +2,14 @@ const express = require('express');
 const morgan = require("morgan");
 const path = require('path');
 const fs = require('fs');
+const cors = require('cors');
 
 const app = express();
-const archivo = path.join(__dirname, '/public/repertorio.json')
+const archivo = path.join(__dirname, '/public/repertorio.json');
 
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(cors());
 
 
 
@@ -20,9 +22,8 @@ app.get('/canciones', (req, res) => {
 
 app.post('/canciones', (req, res) => {
     const data = JSON.parse(fs.readFileSync(archivo), 'utf8');
-    console.log(__dirname)
-    const newData = { id: data.length + 1, ...req.body };
-    fs.writeFileSync(archivo, JSON.stringify([...data, newData], null, 4))
+    const newData = { id: Math.floor(Math.random() * 9999), ...req.body };
+    fs.writeFileSync(archivo, JSON.stringify([...data, newData], null, 2))
 
     res.json({
         message: "cancion registrada"
