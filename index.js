@@ -23,6 +23,12 @@ app.get('/canciones', (req, res) => res.sendFile(dataJson))
 app.post('/canciones', (req, res) => {
     const songs = JSON.parse(fs.readFileSync(dataJson), 'utf8');
     const newSong = { ...req.body, id: Math.floor(Math.random() * 9999) };
+    console.log(typeof newSong)
+
+    if (Object.values(newSong).some((element) => element === "")) {
+        return res.status(400).json({ message: "Campo vacio" });
+    }
+
     fs.writeFileSync(dataJson, JSON.stringify([...songs, newSong], null, 2))
 
     res.status(201).json({
